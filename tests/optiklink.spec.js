@@ -326,8 +326,18 @@ test('OptikLink 保活', async () => {
         await panelPage.click('span.sc-1qu1gou-2:has-text("Login")');
 
         console.log('⏳ 确认到达控制台首页...');
-        await panelPage.waitForURL(/control\.optiklink\.net\/$/, { timeout: TIMEOUT });
+        await panelPage.waitForURL(/control\.optiklink\.net/, { timeout: TIMEOUT });
         console.log(`✅ 控制台登录成功！当前：${panelPage.url()}`);
+
+        await panelPage.waitForTimeout(2000);
+
+        try {
+            const dismiss = panelPage.locator('button:has-text("Ok"), button:has-text("Close"), button:has-text("×"), [class*="dismiss"], [class*="close"]').first();
+            if (await dismiss.isVisible()) {
+                await dismiss.click();
+                console.log('✅ 已关闭提示弹窗');
+            }
+        } catch { /* 没有弹窗，继续 */ }
 
         console.log('🔍 查找服务器...');
         await panelPage.waitForTimeout(2000);
