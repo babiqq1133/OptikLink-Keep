@@ -267,9 +267,14 @@ test('OptikLink 保活', async ({ }, testInfo) => {
 
         console.log('📤 提交登录请求...');
         await page.click('button[type="submit"]');
-        await page.waitForTimeout(2000);
 
-        if (/discord\.com\/login/.test(page.url())) {
+        // ✅ 修复：等待离开登录页，而不是用固定 2 秒延时猜 URL
+        // 只有真正超时仍停留在 /login 才视为登录失败
+        console.log('⏳ 等待离开 Discord 登录页...');
+        try {
+            await page.waitForURL(url => !url.includes('discord.com/login'), { timeout: 15000 });
+        } catch {
+            // 超时后仍在登录页，才是真正的失败
             let err = '账密错误或触发了 2FA / 验证码';
             try { err = await page.locator('[class*="errorMessage"]').first().innerText(); } catch {}
             await sendTG(`❌ Discord 登录失败：${err}`);
