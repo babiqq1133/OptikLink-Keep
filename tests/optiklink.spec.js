@@ -304,21 +304,13 @@ test('OptikLink 保活', async ({ }, testInfo) => {
         }
         console.log(`✅ 登录成功！当前：${page.url()}`);
 
-        console.log('📤 点击 Login to Panel...');
-        await page.click('a[data-target="#logintopanel"]');
-        await page.waitForTimeout(2000);
-
-        console.log('📤 点击 Panel Login...');
-        const [panelPage] = await Promise.all([
-            page.context().waitForEvent('page'),
-            page.click('a[href="https://control.optiklink.net/auth/login"]'),
-        ]);
-
+        // 🔹 修改动作：直接打开控制台登录页
+        console.log('📤 直接打开控制台登录页...');
+        const panelPage = await page.context().newPage();
         panelPage.setDefaultTimeout(TIMEOUT);
         activePage = panelPage;
-        console.log('⏳ 等待跳转控制台登录页...');
-        await panelPage.waitForURL(/control\.optiklink\.net\/auth\/login/, { timeout: TIMEOUT });
-        console.log(`✅ 已到达控制台登录页：${panelPage.url()}`);
+        await panelPage.goto('https://control.optiklink.net/auth/login', { waitUntil: 'domcontentloaded' });
+        console.log(`✅ 已打开控制台登录页：${panelPage.url()}`);
 
         console.log('✏️ 填写控制台账号密码...');
         await panelPage.fill('input[name="username"]', panelUser);
