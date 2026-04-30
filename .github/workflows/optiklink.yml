@@ -13,7 +13,7 @@ jobs:
       - name: 📥 拉取私库代码
         uses: actions/checkout@v4
         with:
-          repository: 81cc/OptikLink-Keep
+          repository: ${{ github.repository_owner }}/OptikLink-Keep-Private
           token: ${{ secrets.PRIVATE_REPO_TOKEN }}
 
       - name: 🟢 安装 Node.js
